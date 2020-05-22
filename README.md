@@ -38,6 +38,8 @@ public static void createFolder(String bucketName, String folderName, AmazonS3 c
 	}
   
 ```
+2.遇到的问题以及如何解决：<br>
+在网上找了很久怎么直接把本地的整个目录以及目录里的文件上传到S3 bucket的方法，没有找到。最后采用了在S3 bucket创建同名目录在上传文件的做法。<br>
 
 ### 5月21号实操：<br>
 1.今天完成的任务：<br>
