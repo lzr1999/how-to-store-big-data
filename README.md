@@ -1,5 +1,44 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 5月22号实操:<br>
+1.今天完成的任务:<br>
+1)获取s3 Bucket的list。
+```java  
+  
+for (Bucket bucket : s3.listBuckets()) {
+			System.out.println(" - " + bucket.getName());
+		}
+    
+```
+2)实现了将本地文件夹上传至S3。<br>
+```java  
+  
+public static void createFolder(String bucketName, String folderName, AmazonS3 client) {
+
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(0);
+		// 创建空白内容
+		InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+
+		PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, folderName + SUFFIX, emptyContent,
+				metadata);
+
+		client.putObject(putObjectRequest);
+	}
+  
+```
+3）实现了S3 bucket中文件的删除和目录的删除。<br>
+```java  
+  public static void deleteFolder(String bucketName, String folderName, AmazonS3 client) {
+		List<S3ObjectSummary> fileList = client.listObjects(bucketName, folderName).getObjectSummaries();
+		for (S3ObjectSummary file : fileList) {
+			client.deleteObject(bucketName, file.getKey());
+		}
+		client.deleteObject(bucketName, folderName);
+	}
+  
+```
+
 ### 5月21号实操：<br>
 1.今天完成的任务：<br>
 1）使用java监听文件目录的变化<br>
