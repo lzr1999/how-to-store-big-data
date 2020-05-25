@@ -27,12 +27,8 @@ public void deleteFile(File file) {
 		 try {
 	            s3.deleteObject(new DeleteObjectRequest(bucketName, keyName));
 	        } catch (AmazonServiceException e) {
-	            // The call was transmitted successfully, but Amazon S3 couldn't process 
-	            // it, so it returned an error response.
 	            e.printStackTrace();
 	        } catch (SdkClientException e) {
-	            // Amazon S3 couldn't be contacted for a response, or the client
-	            // couldn't parse the response from Amazon S3.
 	            e.printStackTrace();
 	        }
 	    }
