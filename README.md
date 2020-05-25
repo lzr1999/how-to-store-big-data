@@ -1,6 +1,6 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
-### 5月21号实操：<br>
+### 5月25号实操：<br>
 1.今天完成的任务:<br>
 1)实现本地文件修改同步到S3
 ```java  
@@ -22,7 +22,20 @@ public void onFileDelete(File file) {
 		System.out.println("[删除]:" + file.getAbsolutePath());
 		fileSynchronizer.deleteFile(file);
 	}
-
+public void deleteFile(File file) {
+		String keyName = Paths.get(file.getAbsolutePath()).getFileName().toString();
+		 try {
+	            s3.deleteObject(new DeleteObjectRequest(bucketName, keyName));
+	        } catch (AmazonServiceException e) {
+	            // The call was transmitted successfully, but Amazon S3 couldn't process 
+	            // it, so it returned an error response.
+	            e.printStackTrace();
+	        } catch (SdkClientException e) {
+	            // Amazon S3 couldn't be contacted for a response, or the client
+	            // couldn't parse the response from Amazon S3.
+	            e.printStackTrace();
+	        }
+	    }
     
 ```
 ### 5月22号实操:<br>
