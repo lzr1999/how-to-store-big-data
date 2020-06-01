@@ -1,5 +1,22 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 5月27号实操：<br>
+1.今天完成的任务<br>
+1)了解了什么是外部表:<br>
+外部表只能在Oracle 9i之后来使用。简单地说，外部表，是指不存在于数据库中的表。通过向Oracle提供描述外部表的元数据，我们可以把一个操作系统文件当成一个只读的数据库表，就像这些数据存储在一个普通数据库表中一样来进行访问。外部表是对数据库表的延伸。<br>
+2)了解了外部表与内部表区别<br>
+未被external修饰的是内部表（managed table），被external修饰的为外部表（external table）；
+区别：
+- 内部表数据由Hive自身管理，外部表数据由HDFS管理；
+- 内部表数据存储的位置是hive.metastore.warehouse.dir（默认：/user/hive/warehouse），外部表数据的存储位置由自己制定（如果没有LOCATION，Hive将在HDFS上的/user/hive/warehouse文件夹下以外部表的表名创建一个文件夹，并将属于这个表的数据存放在这里）；
+- 删除内部表会直接删除元数据（metadata）及存储数据；删除外部表仅仅会删除元数据，HDFS上的文件并不会被删除；
+- 对内部表的修改会将修改直接同步给元数据，而对外部表的表结构和分区进行修改，则需要修复（MSCK REPAIR TABLE table_name;）
+3)学会了怎么创建外部表：<br>
+```java  
+  
+create external table if not exists t_rk_jbxx_result1(word string comment '分词',freq int comment '次数')comment '' row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile location 's3n://liziran/t_rk_jbxx_result/';
+    
+```
 ### 5月26号实操：<br>
 1.今天完成的任务<br>
 1)理解了RDD是什么:<br>
