@@ -1,5 +1,67 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 6月1号实操：<br>
+### 5月29号实操：<br>
+1.今天完成的任务<br>
+1)了解了通过SparkSQL JDBC连接数据库的好处<br>
+JDBC(Java DataBase Connectivity)：是一套统一访问各类数据库的标准Java接口，为各个数据库厂商提供了标准的实现。通过JDBC技术，开发人员可以用纯Java语言和标准的SQL语句编写完整的数据库应用程序，并且真正地实现了软件的跨平台性。<br>
+2)实现了使用JDBC的方式，从Greenplum中选取一个表并读出数据<br>
+```java  
+  
+try{
+
+      println("表数据：")
+      val resultSet = statement.executeQuery("select * from t_rk_jbxx limit 10")
+      while (resultSet.next) {
+        val asjbh = resultSet.getString(4)
+        val ajmc = resultSet.getString(1)
+        val bamjbh = resultSet.getString(8)
+        //输出表数据
+
+        println(s"$asjbh    ｜$ajmc    ｜$bamjbh")
+      }
+      resultSet.close()
+
+    
+```
+
+### 5月28号实操：<br>
+1.今天完成的任务<br>
+1)了解了分布式计算框架:<br>
+Apache Hadoop<br>
+
+批处理模式<br>
+Hadoop的处理功能来自MapReduce引擎，采用了hadoop分布式文件系统HDFS。可以在普通的PC集群上提供可靠的文件存储，通过数据块进行多个副本备份来解决服务器宕机或者硬盘损坏的问题<br>。
+
+MapReduce，把并发、分布式（如机器间通信）和故障恢复等计算细节隐藏起来，在有足够量计算机集群的前提下，一般每台机器构成一个Maper或者Reducer。
+MapReduce的处理技术符合使用键值对的map、shuffle、reduce算法要求。由Map和Reduce两个部分组成一个job，再由job组成DAG，其中把非常重要的Shuffle过程隐藏起来。基本处理过程包括：<br>
+
+- 从HDFS文件系统读取数据集
+
+- 将数据集拆分成小块并分配给所有可用节点
+
+- 针对每个节点上的数据子集进行计算
+
+- 中间结果暂时保存在内存中，达到阈值会写到磁盘上
+
+- 重新分配中间态结果并按照键进行分组
+
+- 通过对每个节点计算的结果进行汇总和组合对每个键的值进行“Reducing”
+
+- 将计算而来的最终结果重新写入 HDFS
+<br>
+Apache Spark<br>
+Apache Spark是一种包含流处理能力的下一代批处理框架。特色是提供了一个集群的分布式内存抽象RDD（Resilient Distributed DataSet），即弹性分布式数据集。Spark上有RDD的两种操作，actor和traformation。transformation包括map、flatMap等操作，actor是返回结果，如Reduce、count、collect等<br>
+
+与MapReduce不同，Spark的数据处理工作全部在内存中进行，只在一开始将数据读入内存，以及将最终结果持久存储时需要与存储层交互。所有中间态的处理结果均存储在内存中。<br>
+2)了解了数据库与数据仓库的区别：
+1. 数据库存储的多为实时的业务数据，而数据仓库存储的多为历史数据。<br>
+2. 数据库是面向事务设计的，而数据仓库是面向主题设计的。<br>
+3. 开发人员都知道，数据库的设计都会尽量的避免冗余，针对于某一业务进行设计。而数据仓库的设计则是在有意的引入冗余，依照各种分析需求、维度、指标等进行设计。<br>
+4. 数据库是为了业务的数据读写，而数据仓库是为了分析大量数据。<br>
+数据仓库中一个最重要的组成部分就是元数据管理，元数据管理简单来说就是关于数据仓库中数据的数据。类似于字典和黄页。保存了整个数据仓库逻辑数据结构、地址、索引、文件等等信息。元数据管理会记录数据仓库中模型的定义、各层级间的映射关系、监控数据仓库的数据状态及 相关ETL 的任务运行状态等，使数据仓库的设计、部署、操作和管理能达成协同和一致。元数据的存储常见的方式有两种，一种是以数据集为基础，每一个数据集有对应的元数据文件，每一个元数据文件包含对应数据集的元数据内容；另一种存储方式是以数据库为基础，即元数据库。比如Hive我们常常使用mysql作为其元数据库（metastore）的存储。<br>
+
+
 ### 5月27号实操：<br>
 1.今天完成的任务<br>
 1)了解了什么是外部表:<br>
@@ -10,7 +72,7 @@
 - 内部表数据由Hive自身管理，外部表数据由HDFS管理；
 - 内部表数据存储的位置是hive.metastore.warehouse.dir（默认：/user/hive/warehouse），外部表数据的存储位置由自己制定（如果没有LOCATION，Hive将在HDFS上的/user/hive/warehouse文件夹下以外部表的表名创建一个文件夹，并将属于这个表的数据存放在这里）；
 - 删除内部表会直接删除元数据（metadata）及存储数据；删除外部表仅仅会删除元数据，HDFS上的文件并不会被删除；
-- 对内部表的修改会将修改直接同步给元数据，而对外部表的表结构和分区进行修改，则需要修复（MSCK REPAIR TABLE table_name;）
+- 对内部表的修改会将修改直接同步给元数据，而对外部表的表结构和分区进行修改，则需要修复（MSCK REPAIR TABLE table_name;）<br>
 3)学会了怎么创建外部表：<br>
 ```java  
   
@@ -33,6 +95,7 @@ create external table if not exists t_rk_jbxx_result1(word string comment '分�
    - 数据调度弹性：DAG TASK 和资源管理无关；
    - checkpoint；
    - 自动的进行内存和磁盘数据存储的切换；
+   <br>
  2）学习了RDD的操作<br>
  ```java  
   
