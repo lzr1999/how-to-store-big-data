@@ -5,7 +5,7 @@
 1)了解了SQL关系数据库与JAVA开发语言之间的关系
    - SQL是结构化的查询语言，将SQL和关系数据库联合到一起，形成SQL关系数据库，可为网络编程提供更加便利的查询条件，目前SQL关系数据库主要有三种模式结构，一种是用户模式;一种是逻辑模式，另一种是物理模式。
    - JAVA开发语言属于一种设计性语言，是目前网络编程中应用最为广泛的语言，可实现跨平台的程序设计，并且具有很强的通用性，比如：目前应用最广泛的手机软件、Web应用系统都是通过JAVA开发语言设计出来的。
-   - JAVA开发语言主要是通过JDBC来实现对SQL关系数据库的访问，因此，JDBC可以看作连接器，是执行SQL关系数据库语句时JAVA的接口，主要由JAVA开发语言编写而成，通过调运对应的API接口，實现对SQL关系数据库的访问。<br>
+   - JAVA开发语言主要是通过JDBC来实现对SQL关系数据库的访问，因此，JDBC可以看作连接器，是执行SQL关系数据库语句时JAVA的接口，主要由JAVA开发语言编写而成，通过调运对应的API接口，实现对SQL关系数据库的访问。<br>
 2）JDBC的作用:<br>
 众所周知，JAVA开发语言具有坚固、安全、可移植等特性，是目前程序编写中应用最为主流的语言。一个相对独立的数据管理系统的用户界面是实现数据管理系统应用的主要方式，而JAVA开发语言正是基于这一观念设计了一种通用的SQL关系数据库访问和存储结构，也就是JDBC，可有效支持基本的SQL功能，是一种通用于低层的API。可以为SQL关系数据库的功能模块提供一个统一的用户界面，通过对界面操作就可以实现对SQL关系数据库所有功能的使用，促使独立于数据管理系统的JAVA开发语言的应用成为可能。总而言之，通过JDBC可以更加轻松的向关系数据库发送SQL语句，通过API编写一个程序，就可以向数据库发展SQL语句，JAVA开发语言无需考虑不同平台，将JAVA和JDBC联合到一起，通过编写一道程序，就可以在任何平台上顺利运行。<br>
 3）SQL关系数据库与JAVA开发语言的融合路径
@@ -18,7 +18,6 @@
 <br>
 4)实现对身份证号码脱敏处理：
 ```java  
-  
 result.foreach(x => {
       //把处理之前的图片输出到input文件夹中
      println(Utils.idEncrypt(x(0).toString))
@@ -31,7 +30,6 @@ result.foreach(x => {
     
 ```
 ```java  
-  
 public static String idEncrypt(String id) {
         if (StringUtils.isEmpty(id)) {
             return id;
@@ -49,7 +47,6 @@ public static String idEncrypt(String id) {
 JDBC(Java DataBase Connectivity)：是一套统一访问各类数据库的标准Java接口，为各个数据库厂商提供了标准的实现。通过JDBC技术，开发人员可以用纯Java语言和标准的SQL语句编写完整的数据库应用程序，并且真正地实现了软件的跨平台性。<br>
 2)实现了使用JDBC的方式，从Greenplum中选取一个表并读出数据<br>
 ```java  
-  
 try{
 
       println("表数据：")
