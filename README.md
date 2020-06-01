@@ -18,7 +18,9 @@
 <br>
 4)实现对身份证号码脱敏处理：
 ```java  
-result.foreach(x => {
+try{
+
+      result.foreach(x => {
       //把处理之前的图片输出到input文件夹中
      println(Utils.idEncrypt(x(0).toString))
     })
@@ -27,10 +29,13 @@ result.foreach(x => {
     //输出结果到控制台
     result.map(t => " idCard:" + t(0)).collect().foreach(println)
     sc.stop()
+
     
 ```
 ```java  
-public static String idEncrypt(String id) {
+
+
+       public static String idEncrypt(String id) {
         if (StringUtils.isEmpty(id)) {
             return id;
         }
