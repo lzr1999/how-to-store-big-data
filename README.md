@@ -1,6 +1,9 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
 ### 6月4号实操：<br>
+1.今天完成的任务:<br>
+初步实现Spark SQL查询分析器的html代码<br>
+
 ### 6月3号实操：<br>
 1.今天完成的任务:<br>
 1)安装maven--包管理工具，可类比为conda或pip，配置环境变量,接着更换maven镜像源：https://blog.csdn.net/zzcchunter/article/details/84795105<br>
