@@ -1,7 +1,14 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 6月4号实操：<br>
+### 6月3号实操：<br>
+1.今天完成的任务:<br>
+1)安装maven--包管理工具，可类比为conda或pip，配置环境变量,接着更换maven镜像源：https://blog.csdn.net/zzcchunter/article/details/84795105<br>
+2)使用IDEA创建springboot项目,安装插件spring-assistant插件自动下载springboot初始项目,https://blog.csdn.net/walykyy/article/details/82776277<br>
+3)参考博客https://blog.csdn.net/baidu_39298625/article/details/98102453 实现springboot项目的demo<br>
+
 ### 6月2号实操：<br>
-1.今天完成的任务：
+1.今天完成的任务：<br>
 1)学习了Flink的窗口：<br>
 参考博客https://www.cnblogs.com/bjwu/p/10393146.html<br>
 2)运用Flink窗口函数统计最近一分钟出现字符“b”的次数：<br>
