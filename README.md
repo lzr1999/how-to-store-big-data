@@ -3,8 +3,45 @@
 ### 6月2号实操：<br>
 1.今天完成的任务：
 1)学习了Flink的窗口：<br>
-参考博客https://www.cnblogs.com/bjwu/p/10393146.html
+参考博客https://www.cnblogs.com/bjwu/p/10393146.html<br>
 2)运用Flink窗口函数统计最近一分钟出现字符“b”的次数：<br>
+```java  
+object Main {
+
+  val target = "b"
+
+  def main(args: Array[String]) {
+
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    //Linux or Mac:nc -l 9999
+    //Windows:nc -l -p 9999
+    val text = env.socketTextStream("localhost", 9999)
+    val stream = text.flatMap {
+      _.toLowerCase.split("\\W+") filter {
+        _.contains(target)
+      }
+    }.map (
+      new MapFunction[String,(String,Int)](){
+        override def map(t:String):(String,Int)={
+          val chars=t.toLowerCase.split("")
+          val cnt:Int = chars.count(
+            p=new Function[String,Boolean]{
+              override def apply(v1:String):Boolean={
+                if(v1.equals(target)){
+                  return true
+                }
+                return false
+              }
+            })
+          return (target,cnt)
+        }
+      }
+    ).keyBy(0).timeWindow(Time.seconds(60)).sum(1)
+    stream.print()
+    env.execute("Window Stream WordCount")
+
+    
+```
 
 ### 6月1号实操：<br>
 1.今天完成的任务：<br>
