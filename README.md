@@ -1,5 +1,11 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 6月2号实操：<br>
+1.今天完成的任务：
+1)学习了Flink的窗口：<br>
+参考博客https://www.cnblogs.com/bjwu/p/10393146.html
+2)运用Flink窗口函数统计最近一分钟出现字符“b”的次数：<br>
+
 ### 6月1号实操：<br>
 1.今天完成的任务：<br>
 1)了解了SQL关系数据库与JAVA开发语言之间的关系
