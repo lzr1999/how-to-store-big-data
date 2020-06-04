@@ -6,6 +6,13 @@
 1)安装maven--包管理工具，可类比为conda或pip，配置环境变量,接着更换maven镜像源：https://blog.csdn.net/zzcchunter/article/details/84795105<br>
 2)使用IDEA创建springboot项目,安装插件spring-assistant插件自动下载springboot初始项目,https://blog.csdn.net/walykyy/article/details/82776277<br>
 3)参考博客https://blog.csdn.net/baidu_39298625/article/details/98102453 实现springboot项目的demo<br>
+2.遇到的问题及解决方法：<br>
+1)端口8080被占用：在application.properties文件中添加：
+```java  
+server.port=${port:8088}
+```
+2)SpringBoot 项目启动后无法打开html页面问题:<br>
+参考博客https://www.jianshu.com/p/8ce9d1f6d212 <br>
 
 ### 6月2号实操：<br>
 1.今天完成的任务：<br>
