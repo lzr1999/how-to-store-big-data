@@ -1,5 +1,46 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
+### 6月5号实操：<br>
+1.今天完成的任务:<br>
+学习了Sqoop工具模块的sqoop-export<br>
+1）常用参数<br>
+```java  
+--connect <jdbc-uri>：指定JDBC连接的数据库地址。
+--connection-manager <class-name>：指定要使用的连接管理器类。
+--driver <class-name>：手动指定要使用的JDBC驱动类。
+--hadoop-mapred-home <dir>：指定$ HADOOP_MAPRED_HOME路径
+--help：打印使用说明
+--password-file：为包含认证密码的文件设置路径。
+-P：从控制台读取密码。
+--password <password>：设置验证密码。
+--username <username>：设置验证用户名。
+--verbose：在工作时打印更多信息。
+--connection-param-file <filename>：提供连接参数的可选属性文件。
+--relaxed-isolation：将连接事务隔离设置为未提交给映射器的读取。
+```
+2）验证参数：<br>
+```java  
+--validate：启用对复制数据的验证，仅支持单个表复制。
+--validator <class-name>：指定要使用的验证程序类。
+--validation-threshold <class-name>：指定要使用的验证阈值类。
+--validation-failurehandler <class-name>：指定要使用的验证失败处理程序类
+```
+3）导出控制参数：<br>
+```java  
+--columns <col,col,col…>：要导出到表格的列。
+--direct：使用直接导出快速路径。
+--export-dir <dir>：用于导出的HDFS源路径。
+-m,--num-mappers <n>：使用n个mapper任务并行导出。
+--table <table-name>：要填充的表。
+--call <stored-proc-name>：存储过程调用。
+--update-key <col-name>：锚点列用于更新。如果有多个列，请使用以逗号分隔的列列表。
+--update-mode <mode>：指定在数据库中使用不匹配的键找到新行时如何执行更新。mode包含的updateonly默认值（默认）和allowinsert。
+--input-null-string <null-string>：字符串列被解释为空的字符串。
+--input-null-non-string <null-string>：要对非字符串列解释为空的字符串。
+--staging-table <staging-table-name>：数据在插入目标表之前将在其中展开的表格。
+--clear-staging-table：表示可以删除登台表中的任何数据。
+--batch：使用批处理模式执行基础语句
+```
 ### 6月4号实操：<br>
 1.今天完成的任务:<br>
 初步实现Spark SQL查询分析器的html代码<br>
