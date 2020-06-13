@@ -8,16 +8,17 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.nlpcn.commons.lang.util.IOUtil
 import scala.collection.mutable.ArrayBuffer
+import scala.io.StdIn
 
 
 object Main {
   //s3参数
-  val accessKey = "C43D4E1AC76D0CF9EE06"
-  val secretKey = "WzJFNEM3NTIwMkZBQjk2MzA3NDdERjM4Mzc1MUZFRjgxQjU0NzAzMERd"
-  val endpoint = "scuts3.depts.bingosoft.net:29999"
-  val bucket = "liziran"
+  var accessKey = "C43D4E1AC76D0CF9EE06"
+  var secretKey = "WzJFNEM3NTIwMkZBQjk2MzA3NDdERjM4Mzc1MUZFRjgxQjU0NzAzMERd"
+  var endpoint = "scuts3.depts.bingosoft.net:29999"
+  var bucket = "liziran"
   //要读取的文件
-  val key = "daas.txt"
+  var key = "daas.txt"
 
   //kafka参数
   val topic = "dataflow_lzr_test2"
@@ -28,6 +29,12 @@ object Main {
   //输入的kafka主题名称
 
   def main(args: Array[String]): Unit = {
+
+    accessKey = StdIn.readLine("请输入accessKey:")
+    secretKey = StdIn.readLine("请输入secretKey:")
+    endpoint = StdIn.readLine("请输入endpoint:")
+    bucket = StdIn.readLine("请输入bucketName:")
+    key = StdIn.readLine("请输入key:")
     val s3Content = readFile()
     produceToKafka(s3Content)
     val env = StreamExecutionEnvironment.getExecutionEnvironment
