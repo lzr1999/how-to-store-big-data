@@ -1,19 +1,12 @@
 import java.util.{Collections, Comparator, Properties, UUID}
-import java.util
-
 import com.bingocloud.{ClientConfiguration, Protocol}
 import com.bingocloud.auth.BasicAWSCredentials
 import com.bingocloud.services.s3.AmazonS3Client
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.streaming.api.datastream.DataStream
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010
-import org.apache.kafka.clients.consumer.{ConsumerRecord, ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.nlpcn.commons.lang.util.IOUtil
-import org.apache.kafka.common.TopicPartition
-
-import scala.util.matching.Regex
 import scala.collection.mutable.ArrayBuffer
 
 
@@ -27,7 +20,7 @@ object Main {
   val key = "daas.txt"
 
   //kafka参数
-  val topic = "dataflow_lzr_test"
+  val topic = "dataflow_lzr_test2"
   val bootstrapServers = "bigdata35.depts.bingosoft.net:29035,bigdata36.depts.bingosoft.net:29036,bigdata37.depts.bingosoft.net:29037"
   val keyPrefix = "upload/"
   //上传数据间隔 单位毫秒
@@ -37,8 +30,22 @@ object Main {
   def main(args: Array[String]): Unit = {
     val s3Content = readFile()
     produceToKafka(s3Content)
-//   ?
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+    val kafkaProperties = new Properties()
+    kafkaProperties.put("bootstrap.servers", bootstrapServers)
+    kafkaProperties.put("group.id", UUID.randomUUID().toString)
+    kafkaProperties.put("auto.offset.reset", "earliest")
+    kafkaProperties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+    kafkaProperties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+    val kafkaConsumer = new FlinkKafkaConsumer010[String](topic,
+      new SimpleStringSchema, kafkaProperties)
+    kafkaConsumer.setCommitOffsetsOnCheckpoints(true)
+    val inputKafkaStream = env.addSource(kafkaConsumer)
+    inputKafkaStream.writeUsingOutputFormat(new S3Writer(accessKey, secretKey, endpoint, bucket, keyPrefix, period))
+    env.execute()
   }
+
 
   /**
    * 从s3中读取文件内容
@@ -74,17 +81,18 @@ object Main {
         list.append(s)
       }
     }
-    list.sortWith((o1:String,o2:String)=>o1.substring(o1.lastIndexOf("destination"))
-      .compareTo(o2.substring(o2.lastIndexOf("destination")))<0)
-    for (s <- list) {
-      if (!s.trim.isEmpty) {
-        val record = new ProducerRecord[String, String](topic, "destination", s)
-        println("开始生产数据：" + s)
+    val b=list.sortWith{(o1:String,o2:String)=>
+    {o1.substring(o1.lastIndexOf("destination"))
+      .compareTo(o2.substring(o2.lastIndexOf("destination")))<0}}
+    for (i <- 0 until b.length)
+      println(b(i))
+    for (i <- 0 until b.length) {
+        val record = new ProducerRecord[String, String](topic, "destination", b(i))
+        println("开始生产数据：" + b(i))
         producer.send(record)
-      }
     }
     producer.flush()
     producer.close()
-  }
+ }
 }
 
