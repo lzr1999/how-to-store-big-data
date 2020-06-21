@@ -1,6 +1,56 @@
 # how-to-store-big-data
 ## 2班李梓然<br>
 ### 6月19号实操：<br>
+1.今天完成的任务:<br>
+1.学习模型调参利器 gridSearchCV （网格搜索）<br>
+参考博客https://blog.csdn.net/weixin_41988628/article/details/83098130<br>
+2.使用RMSE作为模型评估方法，选用Lasso回归：<br>
+```java  
+# 模型训练
+# 使用lasso算法
+# 对模型调参
+class grid():
+    def __init__(self, model):
+        self.model = model
+
+    def grid_get(self, X, y, param_grid):
+        grid_search = GridSearchCV(self.model, param_grid, cv=5, scoring="neg_mean_squared_error")
+        grid_search.fit(X, y)
+        print(grid_search.best_params_, np.sqrt(-grid_search.best_score_))
+        grid_search.cv_results_['mean_test_score'] = np.sqrt(-grid_search.cv_results_['mean_test_score'])
+        print(pd.DataFrame(grid_search.cv_results_)[['params', 'mean_test_score', 'std_test_score']])
+
+
+grid(Lasso()).grid_get(X_scaled, y_log,
+                       {'alpha': [0.0004, 0.0005, 0.0007, 0.0006, 0.0009, 0.0008], 'max_iter': [10000]})
+# 选择模型
+model = Lasso(alpha=0.0005, max_iter=10000)
+name = "Lasso"
+model.fit(X_scaled, y_log)
+pred = np.exp(model.predict(test_X_scaled))
+result = pd.DataFrame({'Id': test.Id, 'SalePrice': pred})
+result.to_csv("output.csv", index=False)
+
+
+# 模型评估
+# 定义RMSE的交叉验证评估指标
+def rmse_cv(model, X, y):
+    rmse = np.sqrt(-cross_val_score(model, X, y, scoring="neg_mean_squared_error", cv=5))
+    return rmse
+
+
+score = rmse_cv(model, X_scaled, y_log)
+print("{}: {:.6f}, {:.4f}".format(name, score.mean(), score.std()))
+# 将训练集按7：3切割为训练集和验证集
+x_train, x_test, y_train, y_test = train_test_split(X_scaled, y_log, test_size=0.3)
+model.fit(x_train, y_train)
+# 将预测值与目标值放入一张图进行比较
+y_pre = model.predict(x_test)
+plt.scatter(y_pre, y_test, marker='o')
+plt.scatter(y_test, y_test)
+plt.show()
+
+```
 ### 6月18号实操：<br>
 1.今天完成的任务:<br>
 1.学习了特征工程的方法：
@@ -8,9 +58,83 @@
 - 对定量特征二值化：定量特征的二值化的核心在于设定一个阈值，小于等于阈值的赋值为0，大于阈值的赋值为1
 - 对定性特征哑编码
 - 特征选择：通常来说，从两个方面考虑来选择特征，特征是否发散和特征与目标的相关性
-- 降维：当特征选择完成后，可以直接训练模型了，但是可能由于特征矩阵过大，导致计算量大、训练时间长的问题，因此降低特征矩阵维度也是必不可少的。常见的降维方法除了以上提到的基于L1惩罚项的模型以外，另外还有主成分分析法（PCA）和线性判别分析（LDA），线性判别分析本身也是一个分类模型。
+- 降维：当特征选择完成后，可以直接训练模型了，但是可能由于特征矩阵过大，导致计算量大、训练时间长的问题，因此降低特征矩阵维度也是必不可少的。常见的降维方法除了以上提到的基于L1惩罚项的模型以外，另外还有主成分分析法（PCA）和线性判别分析（LDA），线性判别分析本身也是一个分类模型。<br>
 2.详细了解了PCA：<br>
 参考博客https://blog.csdn.net/u012421852/article/details/80458340?utm_medium=distribute.pc_relevant.none-task-blog-baidujs-1<br>
+3.对数据集进行特征筛选和降维：<br>
+```java  
+# 特征筛选
+# 用Lasso进行特征筛选，选出较重要的一些特征进行组合
+lasso = Lasso(alpha=0.001)
+lasso.fit(X_scaled, y_log)
+FI_lasso = pd.DataFrame({"Feature Importance": lasso.coef_}, index=data_pipe.columns)
+FI_lasso.sort_values("Feature Importance", ascending=False)
+FI_lasso[FI_lasso["Feature Importance"] != 0].sort_values("Feature Importance").plot(kind="barh", figsize=(15, 25))
+plt.xticks(rotation=90)
+plt.show()
+
+
+# 组合特征
+class add_feature(BaseEstimator, TransformerMixin):
+    def __init__(self, additional=1):
+        self.additional = additional
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        if self.additional == 1:
+            X["TotalHouse"] = X["TotalBsmtSF"] + X["1stFlrSF"] + X["2ndFlrSF"]
+            X["TotalArea"] = X["TotalBsmtSF"] + X["1stFlrSF"] + X["2ndFlrSF"] + X["GarageArea"]
+        else:
+            X["TotalHouse"] = X["TotalBsmtSF"] + X["1stFlrSF"] + X["2ndFlrSF"]
+            X["TotalArea"] = X["TotalBsmtSF"] + X["1stFlrSF"] + X["2ndFlrSF"] + X["GarageArea"]
+            X["+_TotalHouse_OverallQual"] = X["TotalHouse"] * X["OverallQual"]
+            X["+_GrLivArea_OverallQual"] = X["GrLivArea"] * X["OverallQual"]
+            X["+_oMSZoning_TotalHouse"] = X["oMSZoning"] * X["TotalHouse"]
+            X["+_oMSZoning_OverallQual"] = X["oMSZoning"] + X["OverallQual"]
+            X["+_oMSZoning_YearBuilt"] = X["oMSZoning"] + X["YearBuilt"]
+            X["+_oNeighborhood_TotalHouse"] = X["oNeighborhood"] * X["TotalHouse"]
+            X["+_oNeighborhood_OverallQual"] = X["oNeighborhood"] + X["OverallQual"]
+            X["+_oNeighborhood_YearBuilt"] = X["oNeighborhood"] + X["YearBuilt"]
+            X["+_BsmtFinSF1_OverallQual"] = X["BsmtFinSF1"] * X["OverallQual"]
+            X["-_oFunctional_TotalHouse"] = X["oFunctional"] * X["TotalHouse"]
+            X["-_oFunctional_OverallQual"] = X["oFunctional"] + X["OverallQual"]
+            X["-_LotArea_OverallQual"] = X["LotArea"] * X["OverallQual"]
+            X["-_TotalHouse_LotArea"] = X["TotalHouse"] + X["LotArea"]
+            X["-_oCondition1_TotalHouse"] = X["oCondition1"] * X["TotalHouse"]
+            X["-_oCondition1_OverallQual"] = X["oCondition1"] + X["OverallQual"]
+            X["Bsmt"] = X["BsmtFinSF1"] + X["BsmtFinSF2"] + X["BsmtUnfSF"]
+            X["Rooms"] = X["FullBath"] + X["TotRmsAbvGrd"]
+            X["PorchArea"] = X["OpenPorchSF"] + X["EnclosedPorch"] + X["3SsnPorch"] + X["ScreenPorch"]
+            X["TotalPlace"] = X["TotalBsmtSF"] + X["1stFlrSF"] + X["2ndFlrSF"] + X["GarageArea"] + X["OpenPorchSF"] + X[
+                "EnclosedPorch"] + X["3SsnPorch"] + X["ScreenPorch"]
+            return X
+
+
+# 可以通过pipeline对不同特征组合进行尝试
+pipe = Pipeline([
+    ('labenc', labelenc()),
+    ('add_feature', add_feature(additional=2)),
+    ('skew_dummies', skew_dummies(skew=1)),
+])
+```
+```java  
+# PCA去相关性
+full_pipe = pipe.fit_transform(full)
+full_pipe.shape
+n_train = train.shape[0]
+X = full_pipe[:n_train]
+test_X = full_pipe[n_train:]
+y = train.SalePrice
+X_scaled = scaler.fit(X).transform(X)
+y_log = np.log(train.SalePrice)
+test_X_scaled = scaler.transform(test_X)
+pca = PCA(n_components=410)
+X_scaled = pca.fit_transform(X_scaled)
+test_X_scaled = pca.transform(test_X_scaled)
+X_scaled.shape, test_X_scaled.shape
+```
 
 ### 6月17号实操：<br>
 1.今天完成的任务:<br>
