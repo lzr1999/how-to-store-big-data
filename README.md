@@ -3,6 +3,51 @@
 ### 6月19号实操：<br>
 ### 6月18号实操：<br>
 ### 6月17号实操：<br>
+1.今天完成的任务:<br>
+- 下载了kaggle网站数据集，网址是https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data
+- 完成了数据预处理（数据清洗，数据变换）
+```java  
+# 数据预处理
+train.drop(train[(train["GrLivArea"] > 4000) & (train["SalePrice"] < 300000)].index, inplace=True)
+full = pd.concat([train, test], ignore_index=True)
+full.drop(['Id'], axis=1, inplace=True)
+full.shape
+# print(full.shape)
+```
+```java  
+# 数据清洗，查看缺失值数量
+miss_val = full.isnull().sum()
+miss_val[miss_val > 0].sort_values(ascending=False)
+# 根据LotArea和Neighborhood的中值输入LotFronage的缺失值，由于LotArea是一个连续的特征，使用qCut将其划分为10个部分
+# LotFrontage这个特征与LotAreaCut和Neighborhood有比较大的关系，所以这里用这两个特征分组后的中位数进行插补
+full.groupby(['Neighborhood'])[['LotFrontage']].agg(['mean', 'median', 'count'])
+full["LotAreaCut"] = pd.qcut(full.LotArea, 10)
+full.groupby(['LotAreaCut'])[['LotFrontage']].agg(['mean', 'median', 'count'])
+full['LotFrontage'] = full.groupby(['LotAreaCut', 'Neighborhood'])['LotFrontage'].transform(
+    lambda x: x.fillna(x.median()))
+full['LotFrontage'] = full.groupby(['LotAreaCut'])['LotFrontage'].transform(lambda x: x.fillna(x.median()))
+# 表示面积的特征，用0填充缺失值
+cols = ["MasVnrArea", "BsmtUnfSF", "TotalBsmtSF", "GarageCars", "BsmtFinSF2", "BsmtFinSF1", "GarageArea"]
+for col in cols:
+    full[col].fillna(0, inplace=True)
+# 这些特征用None填充缺失值
+cols1 = ["PoolQC", "MiscFeature", "Alley", "Fence", "FireplaceQu", "GarageQual", "GarageCond", "GarageFinish",
+         "GarageYrBlt", "GarageType", "BsmtExposure", "BsmtCond", "BsmtQual", "BsmtFinType2", "BsmtFinType1",
+         "MasVnrType"]
+for col in cols1:
+    full[col].fillna("None", inplace=True)
+# 用mode填充
+cols2 = ["MSZoning", "BsmtFullBath", "BsmtHalfBath", "Utilities", "Functional", "Electrical", "KitchenQual", "SaleType",
+         "Exterior1st", "Exterior2nd"]
+for col in cols2:
+    full[col].fillna(full[col].mode()[0], inplace=True)
+full.isnull().sum()[full.isnull().sum() > 0]
+NumStr = ["MSSubClass", "BsmtFullBath", "BsmtHalfBath", "HalfBath", "BedroomAbvGr", "KitchenAbvGr", "MoSold", "YrSold",
+          "YearBuilt", "YearRemodAdd", "LowQualFinSF", "GarageYrBlt"]
+for col in NumStr:
+    full[col] = full[col].astype(str)
+```
+
 ### 6月16号实操：<br>
 1.今天完成的任务:<br>
 1.数据预处理:<br>
